@@ -1,0 +1,24 @@
+  node-exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: always
+    ports:
+      - 9100:9100
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter
+    ports:
+      - 9113:9113
+    command:
+      - -nginx.scrape-uri=http://nginx/nginx_status
+    depends_on:
+      - nginx
+    restart: always
